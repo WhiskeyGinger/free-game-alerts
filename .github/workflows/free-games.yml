@@ -45,6 +45,7 @@ jobs:
       - name: Check for free games
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PING_ROLE_ID: ${{ vars.PING_ROLE_ID || '1575983225829064734' }}
           MODE: ${{ inputs.mode || 'run' }}
         run: python alerts.py
 
