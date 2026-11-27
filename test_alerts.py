@@ -44,7 +44,7 @@ class Run(unittest.TestCase):
         A.run('H',NOW,get,lambda h,p:False,self.state); self.assertEqual(A.run('H',NOW,get,self.send,self.state)['posted'],2)
     def test_message_reads_well(self):
         A.run('H',NOW,get,self.send,self.state); d=self.sent[0]['embeds'][1]['description']
-        self.assertIn('💰 Normally **$14.99**',d); self.assertIn('⏰ Free until **Thu Dec 3, 3:00 AM CST**',d)
+        self.assertIn('💰 Normally **$14.99**',d); self.assertIn('⏰ Free until **Wed Dec 2, 9:00 PM CST**',d)
         self.assertIn('👉 **[Claim it here](https://store.epicgames.com/en-US/p/hollow-knight)**',d); self.assertEqual(self.sent[0]['allowed_mentions'],{'parse':[]})
     def test_central_time(self):
         self.assertEqual(A.central(dt.datetime(2026,12,3,16,0,tzinfo=dt.timezone.utc)),'Thu Dec 3, 10:00 AM CST')
