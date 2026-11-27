@@ -1,0 +1,56 @@
+name: Free game alerts
+
+on:
+  schedule:
+    # Every 2 hours at an off-peak minute. Public repo: GitHub Actions minutes are free.
+    - cron: "23 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'run = check for new free games; sample = send a labelled sample message'
+        required: false
+        default: run
+        type: choice
+        options: [run, sample]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: free-games
+  cancel-in-progress: false
+
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Restore posted-games memory
+        uses: actions/cache/restore@v4
+        with:
+          path: .state
+          key: posted-${{ github.run_id }}
+          restore-keys: |
+            posted-
+
+      - name: Run tests
+        run: python -m unittest -v
+
+      - name: Check for free games
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MODE: ${{ inputs.mode || 'run' }}
+        run: python alerts.py
+
+      - name: Save posted-games memory
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .state
+          key: posted-${{ github.run_id }}
